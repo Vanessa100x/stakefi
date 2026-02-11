@@ -64,7 +64,7 @@ export function ActivityFeed() {
                             <UserAvatar
                                 src={item.user.pfpUrl}
                                 alt={item.user.username || item.user.wallet}
-                                size={40}
+                                size="md"
                             />
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
