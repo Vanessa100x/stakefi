@@ -16,7 +16,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     },
                     loginMethods: ["wallet", "email"],
                     embeddedWallets: {
-                        createOnLogin: "users-without-wallets",
+                        ethereum: {
+                            createOnLogin: "users-without-wallets",
+                        },
                     },
                     defaultChain: {
                         id: 11155111, // Sepolia
