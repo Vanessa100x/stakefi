@@ -74,6 +74,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Prevent iOS zoom on inputs */
+input,
+select,
+textarea {
+  font-size: 16px !important;
+}
+
 h1,
 h2,
 h3,

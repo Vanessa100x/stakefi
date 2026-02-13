@@ -173,8 +173,25 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         return new ethers.BrowserProvider(ethereumProvider);
     }
 
+    async function ensureNetwork(wallet: any): Promise<boolean> {
+        const chainId = Number(wallet.chainId);
+        if (chainId === 11155111) return true;
+
+        try {
+            await wallet.switchChain(11155111);
+            return true;
+        } catch (error) {
+            console.error("Failed to switch network:", error);
+            alert("Please switch your wallet to Sepolia to continue.");
+            return false;
+        }
+    }
+
     async function handleStake() {
-        if (!authenticated || !stakeAmountUsd || !ethPrice) return;
+        if (!authenticated || !stakeAmountUsd || !ethPrice || !wallets[0]) return;
+
+        // Enforce network
+        if (!(await ensureNetwork(wallets[0]))) return;
 
         setTxStatus("pending");
         try {
@@ -209,6 +226,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     async function handleApprove() {
         if (!authenticated || !wallets[0]) return;
 
+        // Enforce network
+        if (!(await ensureNetwork(wallets[0]))) return;
+
         setTxStatus("pending");
         try {
             const provider = await getProvider();
@@ -235,7 +255,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     }
 
     async function handleClaim() {
-        if (!authenticated) return;
+        if (!authenticated || !wallets[0]) return;
+
+        // Enforce network
+        if (!(await ensureNetwork(wallets[0]))) return;
 
         setTxStatus("pending");
         try {
@@ -255,7 +278,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     }
 
     async function handleUnstake() {
-        if (!authenticated) return;
+        if (!authenticated || !wallets[0]) return;
+
+        // Enforce network
+        if (!(await ensureNetwork(wallets[0]))) return;
 
         setTxStatus("pending");
         try {
@@ -573,7 +599,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                             <button
                                                 onClick={handleUnstake}
                                                 disabled={txStatus === "pending"}
-                                                className="btn-secondary w-full py-2"
+                                                className="btn-secondary w-full py-2 min-h-[44px]"
                                             >
                                                 Unstake
                                             </button>
@@ -588,7 +614,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                             <button
                                                 onClick={handleClaim}
                                                 disabled={txStatus === "pending" || parseFloat(userStake.earned) === 0}
-                                                className="btn-primary w-full py-2"
+                                                className="btn-primary w-full py-2 min-h-[44px]"
                                             >
                                                 Claim
                                             </button>
@@ -631,7 +657,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                                     value={stakeAmountUsd}
                                                     onChange={(e) => setStakeAmountUsd(e.target.value)}
                                                     placeholder="100"
-                                                    className="input-field pl-8"
+                                                    className="input-field pl-8 min-h-[44px]"
                                                 />
                                             </div>
                                             {ethPrice && stakeAmountUsd && (
@@ -665,7 +691,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                         <button
                                             onClick={handleStake}
                                             disabled={!stakeAmountUsd || txStatus === "pending"}
-                                            className="btn-primary w-full"
+                                            className="btn-primary w-full min-h-[48px] text-base"
                                         >
                                             {txStatus === "pending" ? "Processing..." : "Stake"}
                                         </button>
